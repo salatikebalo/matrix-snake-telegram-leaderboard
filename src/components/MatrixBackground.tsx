@@ -11,21 +11,21 @@ const MatrixBackground = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    const columns = Math.floor(canvas.width / 10);
-    const drops: number[] = Array(columns).fill(1);
-    
-    const resize = () => {
+    // Set canvas to full window size
+    const setCanvasSize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
     
-    window.addEventListener('resize', resize);
+    setCanvasSize();
+    window.addEventListener('resize', setCanvasSize);
+    
+    const columns = Math.floor(canvas.width / 10);
+    const drops: number[] = Array(columns).fill(1);
     
     const draw = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      // Slightly higher opacity for better visibility (0.05 -> 0.03)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       ctx.fillStyle = '#DC143C'; // crimson
@@ -43,18 +43,19 @@ const MatrixBackground = () => {
       }
     };
     
-    const interval = setInterval(draw, 50);
+    // Faster interval for better animation
+    const interval = setInterval(draw, 33);
     
     return () => {
       clearInterval(interval);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', setCanvasSize);
     };
   }, []);
   
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed top-0 left-0 pointer-events-none z-0"
+      className="fixed top-0 left-0 pointer-events-none z-0 w-full h-full"
     />
   );
 };

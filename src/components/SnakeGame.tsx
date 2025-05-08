@@ -24,6 +24,7 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
   });
   
   const gameLoopRef = useRef<number | null>(null);
+  const requestRef = useRef<number | null>(null);
   
   // Sound effects
   const soundEffects = {
@@ -53,15 +54,21 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
         gameStarted: true,
         isPaused: false
       });
+      
+      // Ensure any existing animation frame is canceled
+      if (requestRef.current !== null) {
+        cancelAnimationFrame(requestRef.current);
+      }
     } else {
       setGameState(prev => ({ ...prev, isPaused: !prev.isPaused }));
     }
   };
   
   const endGame = () => {
-    if (gameLoopRef.current) {
-      cancelAnimationFrame(gameLoopRef.current);
-      gameLoopRef.current = null;
+    // Cancel animation frame directly
+    if (requestRef.current !== null) {
+      cancelAnimationFrame(requestRef.current);
+      requestRef.current = null;
     }
     
     playSound('gameOver');
@@ -70,9 +77,8 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     onGameOver(gameState.score);
   };
   
-  const updateGameState = () => {
-    if (gameState.gameOver || gameState.isPaused || !gameState.gameStarted) return;
-    
+  // Draw game state
+  const draw = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
@@ -100,6 +106,16 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     ctx.shadowBlur = 10;
     ctx.fillRect(gameState.food.x, gameState.food.y, 20, 20);
     ctx.shadowBlur = 0;
+  };
+  
+  // Game loop with requestAnimationFrame for smoother animation
+  const updateGameState = () => {
+    if (gameState.gameOver || gameState.isPaused || !gameState.gameStarted) {
+      return;
+    }
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     
     // Move snake
     const headX = gameState.snake[0].x;
@@ -150,12 +166,12 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     // Add new head
     newSnake.unshift({ x: newHeadX, y: newHeadY });
     
-    setGameState({
-      ...gameState,
+    setGameState(prev => ({
+      ...prev,
       snake: newSnake,
       food: newFood,
       score: newScore
-    });
+    }));
   };
   
   // Handle keyboard controls
@@ -222,25 +238,38 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     }
   };
   
-  // Game loop
+  // Game loop with fixed time steps for consistent gameplay
   useEffect(() => {
-    const gameLoop = () => {
-      updateGameState();
-      gameLoopRef.current = requestAnimationFrame(gameLoop);
+    let lastTime = 0;
+    const gameSpeed = 100; // ms per step
+    
+    const gameLoop = (timestamp: number) => {
+      // Calculate time difference
+      if (!lastTime) lastTime = timestamp;
+      const elapsed = timestamp - lastTime;
+      
+      // Update game state at fixed intervals
+      if (elapsed >= gameSpeed) {
+        lastTime = timestamp;
+        updateGameState();
+      }
+      
+      // Draw every frame for smooth visuals
+      draw();
+      
+      // Continue the loop
+      if (!gameState.gameOver) {
+        requestRef.current = requestAnimationFrame(gameLoop);
+      }
     };
     
     if (gameState.gameStarted && !gameState.isPaused && !gameState.gameOver) {
-      if (!gameLoopRef.current) {
-        gameLoopRef.current = requestAnimationFrame(gameLoop);
-      }
-    } else if (gameLoopRef.current) {
-      cancelAnimationFrame(gameLoopRef.current);
-      gameLoopRef.current = null;
+      requestRef.current = requestAnimationFrame(gameLoop);
     }
     
     return () => {
-      if (gameLoopRef.current) {
-        cancelAnimationFrame(gameLoopRef.current);
+      if (requestRef.current !== null) {
+        cancelAnimationFrame(requestRef.current);
       }
     };
   }, [gameState]);
