@@ -10,7 +10,7 @@ const BackgroundMusic = ({ soundEnabled }: BackgroundMusicProps) => {
   const [isInitialized, setIsInitialized] = useState(false);
   
   useEffect(() => {
-    audioRef.current = new Audio('https://raw.githubusercontent.com/keysora/keysora.github.io/refs/heads/main/sounds/background.mp3');
+    audioRef.current = new Audio('https://raw.githubusercontent.com/salatikebalo/matrix-snake-telegram-leaderboard/main/sound/background.mp3');
     if (audioRef.current) {
       audioRef.current.loop = true;
       audioRef.current.volume = 0.3; // Set a reasonable volume level
