@@ -48,7 +48,7 @@ const Index = () => {
   
   const toggleSound = () => {
     setSoundEnabled(prev => !prev);
-    toast.info(!soundEnabled ? 'Sound enabled' : 'Sound disabled');
+    toast.info(soundEnabled ? 'Sound disabled' : 'Sound enabled');
   };
   
   return (
