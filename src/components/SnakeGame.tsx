@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useSnakeGame } from '../hooks/useSnakeGame';
 import GameCanvas from './GameCanvas';
 import GameControls from './GameControls';
+import { useIsMobile } from '../hooks/use-mobile';
 
 interface SnakeGameProps {
   onGameOver: (score: number) => void;
@@ -10,7 +11,17 @@ interface SnakeGameProps {
 }
 
 const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
-  const { gameState, startGame, changeDirection } = useSnakeGame({ onGameOver, soundEnabled });
+  const { gameState, startGame, changeDirection } = useSnakeGame({ 
+    onGameOver: (score) => {
+      // Only trigger game over popup when the game is actually over
+      if (gameState.gameOver) {
+        onGameOver(score);
+      }
+    }, 
+    soundEnabled 
+  });
+  
+  const isMobile = useIsMobile();
   
   // Handle keyboard controls
   useEffect(() => {
@@ -86,7 +97,9 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
         
         {!gameState.gameStarted && (
           <div className="absolute inset-0 flex items-center justify-center z-20">
-            <div className="text-xl text-primary">Press any key or tap the screen to start</div>
+            <div className="text-xl text-primary">
+              {isMobile ? "Tap to start" : "Press any key to start"}
+            </div>
           </div>
         )}
         

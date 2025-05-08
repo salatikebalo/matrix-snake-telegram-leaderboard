@@ -16,6 +16,7 @@ const Index = () => {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [lastScore, setLastScore] = useState(0);
+  const [isGameActive, setIsGameActive] = useState(false);
   
   // Check for referral code
   useEffect(() => {
@@ -38,7 +39,12 @@ const Index = () => {
   
   const handleGameOver = (score: number) => {
     setLastScore(score);
-    toast.error(`Game Over! Your score: ${score}`);
+    setIsGameActive(false);
+    
+    // Only show toast when game is truly over
+    if (score > 0) {
+      toast.error(`Game Over! Your score: ${score}`);
+    }
     
     // Show the main button in Telegram WebApp if available
     if ((window as any).Telegram?.WebApp?.MainButton) {
@@ -70,7 +76,7 @@ const Index = () => {
       <main className="flex flex-col items-center flex-grow z-10">
         <SnakeGame onGameOver={handleGameOver} soundEnabled={soundEnabled} />
         
-        <div className="flex flex-wrap justify-center gap-4 mt-8">
+        <div className="flex flex-wrap justify-center gap-4 mt-8 mb-24">
           <Button 
             onClick={() => setShowAccount(true)}
             className="bg-primary hover:bg-primary/80 text-white"
