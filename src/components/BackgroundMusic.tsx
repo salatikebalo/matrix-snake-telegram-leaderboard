@@ -13,13 +13,15 @@ const BackgroundMusic = ({ soundEnabled }: BackgroundMusicProps) => {
     audioRef.current = new Audio('https://raw.githubusercontent.com/keysora/keysora.github.io/refs/heads/main/sounds/background.mp3');
     if (audioRef.current) {
       audioRef.current.loop = true;
+      audioRef.current.volume = 0.3; // Set a reasonable volume level
     }
     
     const handleUserInteraction = () => {
-      if (!isInitialized && audioRef.current && soundEnabled) {
-        audioRef.current.play()
-          .then(() => setIsInitialized(true))
-          .catch(e => console.error('Music play error:', e));
+      if (!isInitialized && audioRef.current) {
+        setIsInitialized(true);
+        if (soundEnabled) {
+          audioRef.current.play().catch(e => console.error('Music play error:', e));
+        }
       }
     };
     
@@ -34,15 +36,18 @@ const BackgroundMusic = ({ soundEnabled }: BackgroundMusicProps) => {
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [soundEnabled]);
   
+  // This effect specifically handles when soundEnabled changes
   useEffect(() => {
-    if (audioRef.current) {
-      if (soundEnabled && isInitialized) {
-        audioRef.current.play().catch(e => console.error('Music play error:', e));
-      } else {
-        audioRef.current.pause();
-      }
+    if (!audioRef.current || !isInitialized) return;
+    
+    if (soundEnabled) {
+      console.log('Sound enabled - playing audio');
+      audioRef.current.play().catch(e => console.error('Music play error:', e));
+    } else {
+      console.log('Sound disabled - pausing audio');
+      audioRef.current.pause();
     }
   }, [soundEnabled, isInitialized]);
   
