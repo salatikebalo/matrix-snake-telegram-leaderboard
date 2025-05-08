@@ -93,11 +93,6 @@ export const useSnakeGame = ({ onGameOver, soundEnabled }: UseSnakeGameProps) =>
         food.y = Math.floor(Math.random() * 20) * 20;
       }
       
-      // Play beep sound when moving/turning
-      if (soundEnabled) {
-        soundEffects.move.play().catch(err => console.log('Audio error:', err));
-      }
-      
       // Update game state
       setGameState(prev => ({
         ...prev,
@@ -116,10 +111,10 @@ export const useSnakeGame = ({ onGameOver, soundEnabled }: UseSnakeGameProps) =>
       requestRef.current = requestAnimationFrame(gameLoop);
     };
     
-    // Start game loop with proper timing
+    // Start game loop with proper timing - faster speed now
     const timerId = setTimeout(() => {
       requestRef.current = requestAnimationFrame(gameLoop);
-    }, 150); // Control snake speed
+    }, 100); // Increased snake speed (was 150)
     
     return () => {
       // Clean up
@@ -149,7 +144,7 @@ export const useSnakeGame = ({ onGameOver, soundEnabled }: UseSnakeGameProps) =>
   };
   
   // Change direction function
-  const changeDirection = (newDirection: string) => {
+  const changeDirection = (newDirection: "up" | "down" | "left" | "right") => {
     // Prevent 180 degree turns
     if (
       (newDirection === 'right' && lastDirectionRef.current === 'left') ||
@@ -160,12 +155,9 @@ export const useSnakeGame = ({ onGameOver, soundEnabled }: UseSnakeGameProps) =>
       return;
     }
     
-    if (soundEnabled) soundEffects.move.play().catch(err => console.log('Audio error:', err));
-    
+    // No sound for direction changes
     setGameState(prev => ({ ...prev, direction: newDirection }));
   };
-  
-  // Removed togglePause function to prevent pausing mid-game
   
   return { gameState, startGame, changeDirection };
 };

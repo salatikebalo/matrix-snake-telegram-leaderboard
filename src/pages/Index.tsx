@@ -9,6 +9,7 @@ import Account from '@/components/Account';
 import BackgroundMusic from '@/components/BackgroundMusic';
 import { saveUserProfile, processReferral } from '@/utils/api';
 import { expandTelegramApp } from '@/utils/telegram';
+import { Volume2, VolumeX } from 'lucide-react';
 
 const Index = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -46,8 +47,8 @@ const Index = () => {
   };
   
   const toggleSound = () => {
-    setSoundEnabled(!soundEnabled);
-    toast.info(soundEnabled ? 'Sound disabled' : 'Sound enabled');
+    setSoundEnabled(prev => !prev);
+    toast.info(!soundEnabled ? 'Sound enabled' : 'Sound disabled');
   };
   
   return (
@@ -59,7 +60,7 @@ const Index = () => {
         className="sound-button absolute top-4 right-4 z-20 cursor-pointer bg-black/70 border-2 border-primary rounded-full w-10 h-10 flex items-center justify-center"
         onClick={toggleSound}
       >
-        {soundEnabled ? '🔊' : '🔇'}
+        {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
       </div>
       
       <header className="mt-6 mb-4 relative z-10">
