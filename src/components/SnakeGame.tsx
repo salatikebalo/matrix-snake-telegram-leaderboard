@@ -33,10 +33,7 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
         case 'ArrowDown':
           changeDirection('down');
           break;
-        case ' ':
-          // Toggle pause
-          startGame();
-          break;
+        // Removed space bar case to prevent pausing
       }
     };
     
@@ -45,7 +42,7 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [gameState.direction, gameState.gameStarted, gameState.isPaused, gameState.gameOver]);
+  }, [gameState.direction, gameState.gameStarted, gameState.gameOver]);
   
   // Handle mobile controls
   const handleMobileControl = (dir: 'up' | 'down' | 'left' | 'right') => {
