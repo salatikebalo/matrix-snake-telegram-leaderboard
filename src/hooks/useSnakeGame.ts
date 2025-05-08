@@ -91,9 +91,10 @@ export const useSnakeGame = ({ onGameOver, soundEnabled }: UseSnakeGameProps) =>
         if (soundEnabled) soundEffects.eat.play().catch(err => console.log('Audio error:', err));
         food.x = Math.floor(Math.random() * 20) * 20;
         food.y = Math.floor(Math.random() * 20) * 20;
-        
-        // Play beep sound when moving/turning
-      } else if (soundEnabled) {
+      }
+      
+      // Play beep sound when moving/turning
+      if (soundEnabled) {
         soundEffects.move.play().catch(err => console.log('Audio error:', err));
       }
       
