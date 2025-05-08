@@ -182,7 +182,7 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
   // Handle keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!gameState.gameStarted) {
+      if (!gameState.gameStarted || gameState.gameOver) {
         startGame();
         return;
       }
@@ -223,11 +223,11 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [gameState.direction, gameState.gameStarted, gameState.isPaused, soundEnabled]);
+  }, [gameState.direction, gameState.gameStarted, gameState.isPaused, soundEnabled, gameState.gameOver]);
   
   // Handle mobile controls
   const handleMobileControl = (dir: 'up' | 'down' | 'left' | 'right') => {
-    if (!gameState.gameStarted) {
+    if (!gameState.gameStarted || gameState.gameOver) {
       startGame();
       return;
     }
@@ -289,6 +289,13 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     };
   }, []);
   
+  // Handler for canvas click to restart game
+  const handleCanvasClick = () => {
+    if (gameState.gameOver || !gameState.gameStarted) {
+      startGame();
+    }
+  };
+  
   return (
     <div className="relative">
       <div className="relative flex flex-col items-center">
@@ -313,9 +320,7 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
           width={400}
           height={400}
           className="border-2 border-primary/50 bg-black z-10 relative rounded-md shadow-lg shadow-primary/20"
-          onClick={() => {
-            if (!gameState.gameStarted) startGame();
-          }}
+          onClick={handleCanvasClick}
         />
         
         <div className="md:hidden mt-8 z-10">

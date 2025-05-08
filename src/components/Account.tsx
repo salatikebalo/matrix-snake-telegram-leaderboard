@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { getUserInfo, getReferralLink } from '@/utils/api';
 import { getTelegramUserData } from '@/utils/telegram';
+import { X } from 'lucide-react';
 
 interface AccountProps {
   isOpen: boolean;
@@ -51,9 +52,7 @@ const Account = ({ isOpen, onClose }: AccountProps) => {
       <DialogContent className="bg-card p-6 rounded-lg shadow-lg max-w-md w-full max-h-[80vh] overflow-y-auto border border-primary/30">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-primary">Your Account</h2>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-primary hover:text-primary/70">
-            ✕
-          </Button>
+          {/* Removed duplicate close button */}
         </div>
         
         {isLoading ? (

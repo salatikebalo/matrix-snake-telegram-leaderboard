@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { getLeaderboard } from '@/utils/api';
 import { LeaderboardEntry } from '@/types/game';
 import { getTelegramUserData } from '@/utils/telegram';
+import { X } from 'lucide-react';
 
 interface LeaderboardProps {
   isOpen: boolean;
@@ -39,9 +40,7 @@ const Leaderboard = ({ isOpen, onClose }: LeaderboardProps) => {
       <DialogContent className="bg-card p-6 rounded-lg shadow-lg max-w-md w-full max-h-[80vh] overflow-y-auto border border-primary/30">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-primary">Top Players This Week</h2>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-primary hover:text-primary/70">
-            ✕
-          </Button>
+          {/* Removed duplicate close button */}
         </div>
         
         {isLoading ? (
