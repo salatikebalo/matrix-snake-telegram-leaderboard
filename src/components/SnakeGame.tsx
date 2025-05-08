@@ -73,7 +73,7 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     
     playSound('gameOver');
     setGameState(prev => ({ ...prev, gameOver: true }));
-    saveUserData(gameState.score);
+    saveUserData(gameState.score).catch(console.error);
     onGameOver(gameState.score);
   };
   
@@ -101,11 +101,16 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     }
     
     // Draw food with glow effect
-    ctx.fillStyle = '#FFF';
     ctx.shadowColor = '#DC143C';
     ctx.shadowBlur = 10;
+    ctx.fillStyle = '#FFF';
     ctx.fillRect(gameState.food.x, gameState.food.y, 20, 20);
     ctx.shadowBlur = 0;
+    
+    // Draw score
+    ctx.fillStyle = '#fff';
+    ctx.font = '16px Arial';
+    ctx.fillText(`Score: ${gameState.score}`, 10, 30);
   };
   
   // Game loop with requestAnimationFrame for smoother animation
@@ -293,7 +298,7 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
         
         {gameState.gameOver && (
           <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/70">
-            <div className="game-over text-primary">GAME OVER</div>
+            <div className="text-4xl font-bold text-primary animate-pulse">GAME OVER</div>
           </div>
         )}
         

@@ -24,7 +24,7 @@ const MatrixBackground = () => {
     const drops: number[] = Array(columns).fill(1);
     
     const draw = () => {
-      // Slightly higher opacity for better visibility (0.05 -> 0.03)
+      // Slightly lower opacity for better visibility (0.05 -> 0.03)
       ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
@@ -55,7 +55,7 @@ const MatrixBackground = () => {
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed top-0 left-0 pointer-events-none z-0 w-full h-full"
+      className="fixed top-0 left-0 pointer-events-none w-full h-full -z-10"
     />
   );
 };
