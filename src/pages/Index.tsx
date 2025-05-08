@@ -10,6 +10,7 @@ import BackgroundMusic from '@/components/BackgroundMusic';
 import { saveUserProfile, processReferral } from '@/utils/api';
 import { expandTelegramApp } from '@/utils/telegram';
 import { Volume2, VolumeX } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -17,6 +18,7 @@ const Index = () => {
   const [showAccount, setShowAccount] = useState(false);
   const [lastScore, setLastScore] = useState(0);
   const [isGameActive, setIsGameActive] = useState(false);
+  const isMobile = useIsMobile();
   
   // Check for referral code
   useEffect(() => {
@@ -76,7 +78,7 @@ const Index = () => {
       <main className="flex flex-col items-center flex-grow z-10">
         <SnakeGame onGameOver={handleGameOver} soundEnabled={soundEnabled} />
         
-        <div className="flex flex-wrap justify-center gap-4 mt-8 mb-24">
+        <div className={`flex flex-wrap justify-center gap-4 mt-4 ${isMobile ? 'mb-36' : 'mb-24'}`}>
           <Button 
             onClick={() => setShowAccount(true)}
             className="bg-primary hover:bg-primary/80 text-white"

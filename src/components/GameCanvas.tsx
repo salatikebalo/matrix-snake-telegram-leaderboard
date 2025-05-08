@@ -1,6 +1,7 @@
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { GameState } from '../types/game';
+import { useIsMobile } from '../hooks/use-mobile';
 
 interface GameCanvasProps {
   gameState: GameState;
@@ -9,6 +10,25 @@ interface GameCanvasProps {
 
 const GameCanvas = ({ gameState, onClick }: GameCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isMobile = useIsMobile();
+  const [canvasSize, setCanvasSize] = useState({ width: 400, height: 400 });
+  
+  // Handle responsive canvas size
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      if (isMobile) {
+        const screenWidth = window.innerWidth;
+        const maxSize = Math.min(screenWidth - 20, 400); // 10px padding on each side
+        setCanvasSize({ width: maxSize, height: maxSize });
+      } else {
+        setCanvasSize({ width: 400, height: 400 });
+      }
+    };
+    
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+    return () => window.removeEventListener('resize', updateCanvasSize);
+  }, [isMobile]);
   
   // Draw game state
   useEffect(() => {
@@ -23,22 +43,35 @@ const GameCanvas = ({ gameState, onClick }: GameCanvasProps) => {
       ctx.fillStyle = '#000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
+      // Calculate the scaling factor
+      const scaleX = canvas.width / 400;
+      const scaleY = canvas.height / 400;
+      
       // Draw snake
       for (let i = 0; i < gameState.snake.length; i++) {
         ctx.fillStyle = i === 0 ? '#DC143C' : '#AA0000'; // crimson for head, darker red for body
-        ctx.fillRect(gameState.snake[i].x, gameState.snake[i].y, 20, 20);
+        const x = gameState.snake[i].x * scaleX;
+        const y = gameState.snake[i].y * scaleY;
+        const width = 20 * scaleX;
+        const height = 20 * scaleY;
+        
+        ctx.fillRect(x, y, width, height);
         
         // Add a border to each snake part
         ctx.strokeStyle = '#222';
         ctx.lineWidth = 1;
-        ctx.strokeRect(gameState.snake[i].x, gameState.snake[i].y, 20, 20);
+        ctx.strokeRect(x, y, width, height);
       }
       
       // Draw food with glow effect
       ctx.shadowColor = '#DC143C';
       ctx.shadowBlur = 10;
       ctx.fillStyle = '#FFF';
-      ctx.fillRect(gameState.food.x, gameState.food.y, 20, 20);
+      const foodX = gameState.food.x * scaleX;
+      const foodY = gameState.food.y * scaleY;
+      const foodWidth = 20 * scaleX;
+      const foodHeight = 20 * scaleY;
+      ctx.fillRect(foodX, foodY, foodWidth, foodHeight);
       ctx.shadowBlur = 0;
       
       // Draw score
@@ -53,13 +86,13 @@ const GameCanvas = ({ gameState, onClick }: GameCanvasProps) => {
     // Set up animation frame
     const animationId = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(animationId);
-  }, [gameState]);
+  }, [gameState, canvasSize]);
   
   return (
     <canvas
       ref={canvasRef}
-      width={400}
-      height={400}
+      width={canvasSize.width}
+      height={canvasSize.height}
       className="border-2 border-primary/50 bg-black z-10 relative rounded-md shadow-lg shadow-primary/20"
       onClick={onClick}
     />
