@@ -13,15 +13,23 @@ const GameCanvas = ({ gameState, onClick }: GameCanvasProps) => {
   const isMobile = useIsMobile();
   const [canvasSize, setCanvasSize] = useState({ width: 400, height: 400 });
   
-  // Handle responsive canvas size
+  // Handle responsive canvas size - optimized for Telegram WebApp
   useEffect(() => {
     const updateCanvasSize = () => {
+      // Check if in Telegram WebApp
+      const isTelegram = Boolean((window as any).Telegram?.WebApp);
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      
       if (isMobile) {
-        const screenWidth = window.innerWidth;
-        const maxSize = Math.min(screenWidth - 20, 400); // 10px padding on each side
+        // For mobile, make sure the canvas fits comfortably
+        // taking into account the Telegram app UI if present
+        const maxSize = Math.min(screenWidth - 20, isTelegram ? 320 : 400);
         setCanvasSize({ width: maxSize, height: maxSize });
       } else {
-        setCanvasSize({ width: 400, height: 400 });
+        // For desktop, standard size but adapt if in Telegram
+        const maxSize = isTelegram ? Math.min(400, screenWidth - 40) : 400;
+        setCanvasSize({ width: maxSize, height: maxSize });
       }
     };
     
