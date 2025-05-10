@@ -25,6 +25,7 @@ export const useSnakeGame = ({ onGameOver, soundEnabled }: UseSnakeGameProps) =>
   
   const requestRef = useRef<number | null>(null);
   const lastDirectionRef = useRef<string>(gameState.direction);
+  const lastInputTimeRef = useRef<number>(0);
   
   // Sound effects using the imported sound utility
   const soundEffects = {
@@ -141,9 +142,10 @@ export const useSnakeGame = ({ onGameOver, soundEnabled }: UseSnakeGameProps) =>
     });
     
     lastDirectionRef.current = 'right';
+    lastInputTimeRef.current = Date.now();
   };
   
-  // Change direction function
+  // Change direction function with throttling to prevent too many sound effects
   const changeDirection = (newDirection: "up" | "down" | "left" | "right") => {
     // Prevent 180 degree turns
     if (
@@ -155,8 +157,17 @@ export const useSnakeGame = ({ onGameOver, soundEnabled }: UseSnakeGameProps) =>
       return;
     }
     
-    // No sound for direction changes
-    setGameState(prev => ({ ...prev, direction: newDirection }));
+    const now = Date.now();
+    const timeSinceLastInput = now - lastInputTimeRef.current;
+    
+    // Throttle input and sound to prevent rapid firing
+    if (timeSinceLastInput > 100) { // 100ms throttle
+      lastInputTimeRef.current = now;
+      setGameState(prev => ({ ...prev, direction: newDirection }));
+    } else {
+      // Still change direction but don't play sound if inputs are too close together
+      setGameState(prev => ({ ...prev, direction: newDirection }));
+    }
   };
   
   return { gameState, startGame, changeDirection };

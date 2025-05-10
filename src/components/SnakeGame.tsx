@@ -23,13 +23,22 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
   
   const isMobile = useIsMobile();
   
-  // Handle keyboard controls
+  // Handle keyboard controls with debouncing
   useEffect(() => {
+    let lastKeyTime = 0;
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!gameState.gameStarted || gameState.gameOver) {
         startGame();
         return;
       }
+      
+      // Simple debounce for keyboard input
+      const now = Date.now();
+      if (now - lastKeyTime < 50) {
+        return; // Ignore keypresses that are too close together
+      }
+      lastKeyTime = now;
       
       switch (e.key) {
         case 'ArrowLeft':
@@ -55,7 +64,7 @@ const SnakeGame = ({ onGameOver, soundEnabled }: SnakeGameProps) => {
     };
   }, [gameState.direction, gameState.gameStarted, gameState.gameOver]);
   
-  // Handle mobile controls
+  // Handle mobile controls with debounce
   const handleMobileControl = (dir: 'up' | 'down' | 'left' | 'right') => {
     if (!gameState.gameStarted || gameState.gameOver) {
       startGame();

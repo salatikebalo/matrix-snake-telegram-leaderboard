@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react';
 
@@ -9,9 +9,15 @@ interface GameControlsProps {
 
 const GameControls = ({ onDirectionChange }: GameControlsProps) => {
   const isMobile = useIsMobile();
+  const lastTouchTimeRef = useRef<number>(0);
   
   const handleButtonClick = (direction: 'up' | 'down' | 'left' | 'right') => {
-    onDirectionChange(direction);
+    const now = Date.now();
+    // Throttle touch inputs to prevent rapid firing
+    if (now - lastTouchTimeRef.current > 50) {
+      lastTouchTimeRef.current = now;
+      onDirectionChange(direction);
+    }
   };
 
   if (!isMobile) return null;
